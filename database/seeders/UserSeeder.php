@@ -24,14 +24,14 @@ class UserSeeder extends Seeder
             'name' => 'Pengelola',
             'email' => 'pengelola112233@gmail.com',
             'password' => bcrypt('pengelola112233'),
-            'role' => 0,
+            'role' => 1,
             'email_verified_at' => now(),
         ];
         $kasir = [
             'name' => 'Kasir',
             'email' => 'kasir112233@gmail.com',
             'password' => bcrypt('kasir112233'),
-            'role' => 0,
+            'role' => 2,
             'email_verified_at' => now(),
         ];
         User::create($admin)
