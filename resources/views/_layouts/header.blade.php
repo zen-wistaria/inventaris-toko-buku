@@ -6,7 +6,7 @@
             </svg>
         </button>
 
-        <p class="text-xl italic font-bold text-gray-600 px-5"> Halo,
+        <p class="px-5 text-xl italic font-bold text-gray-600"> Halo,
             @isset( auth()->user()->name )
             {{ auth()->user()->name }}
             @endisset
@@ -31,7 +31,7 @@
                 </svg>
                 @isset( $monitor )
                 @if ($monitor->count() > 0)
-                <div class="absolute top-0 right-1 -mt-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                <div class="absolute top-0 flex items-center justify-center w-5 h-5 -mt-2 text-xs text-white bg-red-500 rounded-full right-1">
                     {{ $monitor->count() }}
                 </div>
                 @endif
@@ -41,24 +41,24 @@
             <div x-cloak x-show="notificationOpen" @click="notificationOpen = false" class="fixed inset-0 z-10 w-full h-full"></div>
 
             <div x-cloak x-show="notificationOpen" class="absolute right-0 z-10 mt-2 overflow-hidden bg-white rounded-lg shadow-xl w-80" style="width:20rem;">
-                <!-- <div class="flex justify-items-start w-full mb-5"> -->
+                <!-- <div class="flex w-full mb-5 justify-items-start"> -->
                 <!-- Warning -->
-                <p class="mx-2 px-2 text-sm text-center">
+                <p class="px-2 mx-2 text-sm text-center">
                     <span class="font-bold" href="#">Notifikasi</span>
                 </p>
                 @isset( $monitor )
                 @foreach ( $monitor as $book )
                 <div class="flex max-w-xs w-[300px] bg-white shadow-md rounded-lg overflow-hidden ml-3 mb-2">
-                    <div class="flex justify-center items-center w-12 bg-yellow-500">
-                        <svg class="h-6  w-6 fill-current text-white" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                    <div class="flex items-center justify-center w-12 bg-yellow-500">
+                        <svg class="w-6 h-6 text-white fill-current" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
                             <path d="M20 3.33331C10.8 3.33331 3.33337 10.8 3.33337 20C3.33337 29.2 10.8 36.6666 20 36.6666C29.2 36.6666 36.6667 29.2 36.6667 20C36.6667 10.8 29.2 3.33331 20 3.33331ZM21.6667 28.3333H18.3334V25H21.6667V28.3333ZM21.6667 21.6666H18.3334V11.6666H21.6667V21.6666Z" />
                         </svg>
                     </div>
 
-                    <div class="-mx-3 py-2 px-4">
+                    <div class="px-4 py-2 -mx-3">
                         <div class="mx-3">
-                            <span class="text-yellow-500 font-semibold">Peringatan</span>
-                            <p class="text-gray-600 text-sm">Buku <strong>{{ $book->title }}</strong> tersisa <strong>{{ $book->stock }}</strong>!</p>
+                            <span class="font-semibold text-yellow-500">Peringatan</span>
+                            <p class="text-sm text-gray-600">Buku <strong>{{ $book->title }}</strong> tersisa <strong>{{ $book->stock }}</strong>!</p>
                         </div>
                     </div>
                 </div>
@@ -104,7 +104,12 @@
             <div x-cloak x-show="dropdownOpen" class="absolute right-0 z-10 w-48 mt-2 overflow-hidden bg-white rounded-md shadow-xl">
                 <!-- <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-600 hover:text-white">Profile</a>
                 <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-600 hover:text-white">Products</a> -->
-                <a href=" {{ route('logout') }} " class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-600 hover:text-white">Logout</a>
+                <a href=" {{ route('logout') }} " class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-600 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" class="inline w-6 h-6 p-1">
+                        <path fill="currentColor" d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h6q.425 0 .713.288T12 4t-.288.713T11 5H5v14h6q.425 0 .713.288T12 20t-.288.713T11 21zm12.175-8H10q-.425 0-.712-.288T9 12t.288-.712T10 11h7.175L15.3 9.125q-.275-.275-.275-.675t.275-.7t.7-.313t.725.288L20.3 11.3q.3.3.3.7t-.3.7l-3.575 3.575q-.3.3-.712.288t-.713-.313q-.275-.3-.262-.712t.287-.688z" />
+                    </svg>
+                    Logout
+                </a>
             </div>
         </div>
     </div>
