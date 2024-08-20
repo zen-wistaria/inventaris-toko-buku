@@ -8,24 +8,30 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 
+Route::redirect('/', '/login');
 Route::get('login', [LoginController::class, 'login'])->name('login')->middleware('guest');
 Route::post('login', [LoginController::class, 'authenticate']);
 Route::get('logout', [LoginController::class, 'logout'])->name('logout');
-Route::get('admin', [DashboardController::class, 'index'])->name('dashboard')->middleware('can:admin');
+Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('can:admin');
 Route::get('welcome', [DashboardController::class, 'welcome'])->name('welcome')->middleware('auth');
 
-Route::prefix('user')->middleware('can:admin')->group(function () {
-    Route::patch('/', [UserController::class, 'update'])->name('user.update');
-    Route::post('register', [UserController::class, 'store'])->name('user.register');
-    Route::delete('{user}', [UserController::class, 'destroy'])->name('user.destroy');
+Route::prefix('users')->middleware('can:admin')->group(function () {
+    Route::get('/', [UserController::class, 'index'])->name('users.index');
+    Route::post('/', [UserController::class, 'store'])->name('users.store');
+    Route::get('create', [UserController::class, 'create'])->name('users.create');
+    Route::patch('{user:username}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('{user:username}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::get('{user:username}/edit', [UserController::class, 'edit'])->name('users.edit');
 });
 
 Route::prefix('books')->middleware('can:pengelola')->group(function () {
     Route::get('/', [BookController::class, 'index'])->name('books.index');
     Route::post('/', [BookController::class, 'store'])->name('books.store');
-    Route::patch('/', [BookController::class, 'update'])->name('books.update');
-    // Route::get('{book}', [BookController::class, 'edit'])->name('books.edit');
+    Route::get('create', [BookController::class, 'create'])->name('books.create');
+    Route::patch('{book:slug}', [BookController::class, 'update'])->name('books.update');
     Route::delete('{book:slug}', [BookController::class, 'destroy'])->name('books.destroy');
+    Route::get('{book:slug}/edit', [BookController::class, 'edit'])->name('books.edit');
+    Route::get('{book:slug}/details', [BookController::class, 'show'])->name('books.show');
 });
 
 Route::prefix('entry')->middleware('can:pengelola')->group(function () {
@@ -39,8 +45,9 @@ Route::prefix('entry')->middleware('can:pengelola')->group(function () {
 Route::prefix('transactions')->middleware('can:kasir')->group(function () {
     Route::get('/', [TransactionController::class, 'index'])->name('transactions.index');
     Route::post('/', [TransactionController::class, 'store'])->name('transactions.store');
-    Route::patch('/', [TransactionController::class, 'update'])->name('transactions.update');
     Route::get('create', [TransactionController::class, 'create'])->name('transactions.create');
-    Route::get('details/{transactionsCode}', [TransactionController::class, 'details'])->name('transactions.details');
-    Route::delete('{transactions}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
+    Route::patch('{transaction:code}', [TransactionController::class, 'update'])->name('transactions.update');
+    // Route::delete('{transaction:code}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
+    Route::get('{transaction:code}/edit', [TransactionController::class, 'edit'])->name('transactions.edit');
+    Route::get('{transaction:code}/details', [TransactionController::class, 'show'])->name('transactions.show');
 });

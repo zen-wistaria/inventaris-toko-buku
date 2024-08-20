@@ -22,7 +22,7 @@ class BookItemFactory extends Factory
             'book_id' => Book::factory(),
             'total_books' => fake()->numberBetween(0, 100),
             'date' => fake()->date(),
-            'updatedBy' => User::factory(),
+            'updated_by' => User::factory(),
         ];
     }
 }

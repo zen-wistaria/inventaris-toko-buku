@@ -57,9 +57,9 @@
 
             <form class="mt-4" action="{{ route('login') }}" method="post">
                 @csrf
-                <label class="block" for="email">
-                    <span class="text-gray-700 text-sm">Email</span>
-                    <input type="email" class="form-input mt-1 block w-full rounded-md focus:border-indigo-600" id="email" name="email" autofocus required>
+                <label class="block" for="login">
+                    <span class="text-gray-700 text-sm">Email / Username</span>
+                    <input type="text" class="form-input mt-1 block w-full rounded-md focus:border-indigo-600" id="login" name="login" autofocus required>
                 </label>
 
                 <label class="block mt-3" for="password">

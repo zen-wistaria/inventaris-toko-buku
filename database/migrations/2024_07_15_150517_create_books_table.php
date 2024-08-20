@@ -20,7 +20,8 @@ return new class extends Migration
             $table->string('year', 4);
             $table->integer('stock')->default(0);
             $table->integer('price');
-            $table->foreignId('updatedBy')->constrained(
+            $table->text('synopsis')->nullable();
+            $table->foreignId('updated_by')->constrained(
                 table: 'users',
                 indexName: 'books_user_id_index'
             );

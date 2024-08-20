@@ -18,7 +18,7 @@ class Transaction extends Model
         'code',
         'total_price',
         'status',
-        'updatedBy',
+        'updated_by',
     ];
 
     // protected $primaryKey = 'code';
@@ -33,8 +33,8 @@ class Transaction extends Model
         return Number::currency($this->attributes['total_price'], in: 'IDR', locale: 'id');
     }
 
-    public function updateBy(): BelongsTo
+    public function updatedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'updatedBy', 'id');
+        return $this->belongsTo(User::class, 'updated_by', 'id');
     }
 }

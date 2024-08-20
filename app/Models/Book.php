@@ -17,8 +17,9 @@ class Book extends Model
         'publisher',
         'price',
         'year',
+        'synopsis',
         'stock',
-        'updatedBy',
+        'updated_by',
     ];
 
     public function formatPrice()
@@ -26,8 +27,8 @@ class Book extends Model
         return Number::currency($this->attributes['price'], in: 'IDR', locale: 'id');
     }
 
-    public function updateBy(): BelongsTo
+    public function updatedBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'updatedBy', 'id');
+        return $this->belongsTo(User::class, 'updated_by', 'id');
     }
 }

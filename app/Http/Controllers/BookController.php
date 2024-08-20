@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BookRequest;
 use App\Models\Book;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 
 class BookController extends Controller
 {
     public function index()
     {
-        $books = Book::with('updateBy')->latest();
+        $title = 'Inventaris Toko Buku » Daftar Buku';
+        $books = Book::with('updatedBy')->orderBy('title', 'asc');
         if (request('search')) {
             $search = request('search');
             $books = $books->where(function ($query) use ($search) {
@@ -20,27 +21,54 @@ class BookController extends Controller
                     ->orWhere('publisher', 'like', '%' . $search . '%')
                     ->orWhere('year', 'like', '%' . $search . '%');
             });
+        } else {
+            $search = null;
         }
-        $monitorStok = clone $books;
-        $monitorStok = $monitorStok->where('stock', '<=', 5);
-        $title = 'Books';
-        return view('books.index', ['title' => $title, 'monitor' => $monitorStok->get(), 'books' => $books->paginate(20)]);
+        $monitor = clone $books;
+        $books = $books->paginate(7);
+        $monitor = $monitor->where('stock', '<=', 5)->orderBy('stock', 'asc')->get();
+
+        return view('books.index', compact('title', 'books', 'monitor', 'search'));
     }
 
-    public function store(Request $request)
+    public function store(BookRequest $request)
     {
-        $data = $request->validate([
-            'title' => 'required|max:100|unique:books',
-            'author' => 'required|max:100',
-            'publisher' => 'required|max:100',
-            'price' => 'required|numeric',
-            'year' => 'required|numeric|digits:4',
-        ]);
+        $data = $request->only(
+            'title',
+            'author',
+            'publisher',
+            'price',
+            'year',
+            'synopsis'
+        );
         $data['slug'] = Str::slug($data['title']);
-        $data['updatedBy'] = auth()->user()->id;
-
+        $data['updated_by'] = auth()->user()->id;
         Book::create($data);
-        return redirect()->back()->with('message', 'Buku ' . $data['title'] . ' berhasil di tambahkan');
+
+        return redirect()->route('books.index')->with('message', 'Buku ' . $data['title'] . ' berhasil di tambahkan');
+    }
+
+    public function create()
+    {
+        $title = 'Inventaris Toko Buku » Tambah Buku';
+        $monitor = Book::where('stock', '<=', 5)->orderBy('stock', 'asc')->get();
+        return view('books.create', compact('title', 'monitor'));
+    }
+
+    public function update(BookRequest $request, Book $book)
+    {
+        $data = $request->only(
+            'title',
+            'author',
+            'publisher',
+            'price',
+            'year',
+            'synopsis'
+        );
+        $data['slug'] = Str::slug($data['title']);
+        $book->update($data);
+
+        return redirect()->route('books.index')->with('message', 'Buku ' . $book->title . ' Berhasil di perbarui');
     }
 
     public function destroy(Book $book)
@@ -53,32 +81,23 @@ class BookController extends Controller
             }
             return redirect()->back()->withErrors($err->getCode() . ' | ' . $err->getMessage());
         }
+
         if ($result) {
             return redirect()->back()->with('message', 'Buku ' . $book->title . ' berhasil di hapus');
         }
     }
 
-    // public function edit()
-    // {
-    //     if (request('book')) {
-    //         return response()->json(Book::where('slug', request('book'))->first());
-    //     }
-    // }
-
-
-    public function update(Request $request)
+    public function edit(Book $book)
     {
-        $data = $request->validate([
-            'title' => 'required|max:100',
-            'author' => 'required|max:100',
-            'publisher' => 'required|max:100',
-            'price' => 'required|numeric',
-            'year' => 'required|numeric|digits:4',
-        ]);
-        $data['slug'] = Str::slug($data['title']);
+        $title = 'Inventaris Toko Buku » Edit Buku ' . $book->title;
+        $monitor = Book::where('stock', '<=', 5)->orderBy('stock', 'asc')->get();
+        return view('books.edit', compact('book', 'title', 'monitor'));
+    }
 
-        $book = Book::findOrFail($request->id);
-        $book->update($data);
-        return redirect()->back()->with('message', 'Buku ' . $book->title . ' Berhasil di perbarui');
+    public function show(Book $book)
+    {
+        $title = 'Inventaris Toko Buku » Detail Buku ' . $book->title;
+        $monitor = Book::where('stock', '<=', 5)->orderBy('stock', 'asc')->get();
+        return view('books.show', compact('book', 'title', 'monitor'));
     }
 }

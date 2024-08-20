@@ -13,7 +13,7 @@ class BookItem extends Model
         'book_id',
         'total_books',
         'date',
-        'updatedBy'
+        'updated_by'
     ];
 
     protected $casts = [
@@ -27,6 +27,6 @@ class BookItem extends Model
 
     public function updateBy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'updatedBy', 'id');
+        return $this->belongsTo(User::class, 'updated_by', 'id');
     }
 }

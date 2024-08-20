@@ -11,37 +11,54 @@ class TransactionController extends Controller
 {
     public function index()
     {
-        $transactions = Transaction::with('updateBy')->latest();
+        $title = "Inventaris Toko Buku » Daftar Transaksi";
+        $transactions = Transaction::with('updatedBy')->latest();
         if (request('search')) {
-            $transactions = Transaction::where('code', 'like', '%' . request('search') . '%')
-                ->orWhere('customer_name', 'like', '%' . request('search') . '%')
-                ->latest();
+            $search = request('search');
+            $transactions = $transactions->where('code', 'like', '%' . $search . '%')
+                ->orWhere('customer_name', 'like', '%' . $search . '%')
+                ->orderBy('customer_name', 'asc');
+        } else {
+            $search = null;
         }
-        $monitorStok = Book::where('stock', '<=', 5);
+        $transactions = $transactions->paginate(7);
+        $monitor = Book::where('stock', '<=', 5)->get();
 
-        return view('transactions.index', ['title' => 'Transactions', 'monitor' => $monitorStok->get(), 'transactions' => $transactions->paginate(8)]);
+        return view('transactions.index', compact('title', 'transactions', 'monitor', 'search'));
     }
 
     public function create()
     {
-        $books = Book::latest();
-        $monitorStok = clone $books;
-        $monitorStok = $monitorStok->where('stock', '<=', 5);
-        return view('transactions.create', ['title' => 'Buat Transaksi', 'monitor' => $monitorStok->get(), 'books' => $books->get()]);
+        $title = 'Inventaris Toko Buku » Buat Transaksi';
+        $books = Book::orderBy('title', 'asc')->where('stock', '>', 0)->get();
+        $monitor = Book::where('stock', '<=', 5)->orderBy('stock', 'asc')->get();
+
+        return view('transactions.create', compact('title', 'books', 'monitor'));
     }
 
     public function store(Request $request)
     {
-        $request['code'] = 'INV-' . rand(100000, 999999);
-        $request['total_price'] = 0;
-        // $request['updatedB'] = "admin";
-        $request['updatedBy'] = auth()->user()->id;
+        $message = [
+            'customer_name.required' => 'Nama Pelanggan harus di isi dan tidak boleh kosong.',
+            'customer_name.max' => 'Nama Pelanggan tidak boleh lebih dari 100 karakter.',
+            'book_id.*.required' => 'Buku harus di pilih dan tidak boleh kosong.',
+            'total_books.*.required' => 'Jumlah buku harus di pilih dan tidak boleh kosong.',
+        ];
 
         $request->validate([
             'customer_name' => 'required|string|max:100',
             'book_id.*' => 'required|exists:books,id',
             'total_books.*' => 'required|integer|min:1',
-        ]);
+        ], $message);
+
+        $request['code'] = 'INV-' . rand(100000, 999999);
+        $request['total_price'] = 0;
+        $request['updated_by'] = auth()->user()->id;
+
+        // Validate of book id in array is must be unique
+        if (count($request->book_id) != count(array_unique($request->book_id))) {
+            return redirect()->back()->withErrors('Terdapat buku yang sama dalam transaksi.');
+        }
 
         // Create a new Transaction
         $transaction = Transaction::create([
@@ -49,7 +66,7 @@ class TransactionController extends Controller
             'code' => $request->code,
             'total_price' => 0,
             'status' => 1,
-            'updatedBy' => $request->updatedBy,
+            'updated_by' => $request->updated_by,
         ]);
 
         // Validate stock of book
@@ -83,24 +100,39 @@ class TransactionController extends Controller
             $totalPrice += $book->price * $totalBooks;
         }
         Transaction::where('id', $transaction->id)->update(['total_price' => $totalPrice]);
-        return redirect()->route('transactions.index')->with('message', 'Transaksi Berhasil di tambahkan');
+
+        return to_route('transactions.index')->with('message', 'Transaksi Berhasil di buat');
     }
 
-    public function update(Request $request)
+    public function edit(Transaction $transaction)
     {
+        $title = 'Inventaris Toko Buku » Edit Transaksi ' . $transaction->code;
+        $books = Book::orderBy('title', 'asc')->get();
+        $monitor = Book::where('stock', '<=', 5)->orderBy('stock', 'asc')->get();
+        return view('transactions.edit', compact('transaction', 'title', 'books', 'monitor'));
+    }
+
+    public function update(Request $request, Transaction $transaction)
+    {
+        $message = [
+            'status.required' => 'Status harus di pilih dan tidak boleh kosong.',
+            'status.in' => 'Status yang dipilih tidak valid.',
+        ];
         $request->validate([
             'status' => 'required|in:0,1,2',
-        ]);
-        $transaction = Transaction::findOrFail(request('id'));
+        ], $message);
         $transaction->update([
             'status' => request('status'),
         ]);
-        return redirect()->route('transactions.index')->with('message', 'Transaksi ' . $transaction->code . ' Berhasil di update');
+
+        return to_route('transactions.index')->with('message', 'Transaksi ' . $transaction->code . ' Berhasil di perbarui');
     }
 
-    public function details($transactionsCode)
+    public function show($transactionsCode)
     {
-        $transaction = Transaction::with('details', 'details.book')->where('code', $transactionsCode)->get()->first();
-        return view('transactions.details', ['title' => 'Detail Transaksi', 'transaction' => $transaction]);
+        $title = 'Inventaris Toko Buku » Detail Transaksi ' . $transactionsCode;
+        $transaction = Transaction::where('code', $transactionsCode)->firstOrFail();
+        $transactionDetails = $transaction->details()->with('book')->paginate(7);
+        return view('transactions.details', compact('title', 'transaction', 'transactionDetails'));
     }
 }

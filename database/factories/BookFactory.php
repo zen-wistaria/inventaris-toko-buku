@@ -24,9 +24,10 @@ class BookFactory extends Factory
             'author' => fake()->name(),
             'publisher' => fake()->company(),
             'price' => fake()->numberBetween(1000, 100000),
+            'synopsis' => fake()->paragraph(5, true),
             'year' => fake()->numberBetween(1900, 2024),
             'stock' => fake()->numberBetween(0, 100),
-            'updatedBy' => User::factory(),
+            'updated_by' => User::factory(),
         ];
     }
 }

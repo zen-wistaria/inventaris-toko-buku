@@ -19,7 +19,7 @@ return new class extends Migration
             );
             $table->integer('total_books');
             $table->date('date');
-            $table->foreignId('updatedBy')->constrained(
+            $table->foreignId('updated_by')->constrained(
                 table: 'users',
                 indexName: 'book_items_user_id_index'
             );

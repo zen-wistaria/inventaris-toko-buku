@@ -1,9 +1,9 @@
 @extends('_layouts.master')
 
 @section('body')
-<h3 class="text-gray-700 text-3xl font-medium">Daftar Buku</h3>
+<h3 class="text-gray-700 text-3xl font-medium">Daftar Pengguna</h3>
 <div class="flex justify-between mt-8 mb-3">
-    <form class="flex items-center w-1/3" method="get" action="{{ route('books.index') }}">
+    <form class="flex items-center w-1/3" method="get" action="{{ route('users.index') }}">
         <div class="relative w-full">
             <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                 <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -21,8 +21,8 @@
             <span class="sr-only">Search</span>
         </button>
     </form>
-    <a href="{{ route('books.create') }}" class="px-3 py-2.5 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-500 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-        Tambah Buku
+    <a href="{{ route('users.create') }}" class="px-3 py-2.5 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-500 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+        Tambah Pengguna
     </a>
 </div>
 
@@ -36,16 +36,16 @@
                             No
                         </th>
                         <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                            Judul
+                            Name
                         </th>
                         <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                            Harga
+                            Email
                         </th>
                         <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                            Stok
+                            Role
                         </th>
                         <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                            Ditambahkan Oleh
+                            Tgl. Registrasi
                         </th>
                         <th class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider text-right">
                             Aksi
@@ -54,39 +54,29 @@
                 </thead>
 
                 <tbody class="bg-white">
-                    @foreach ($books as $book)
+                    @foreach ($users as $user)
                     <tr>
                         <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                            {{ $books->firstItem() + $loop->index }}
+                            {{ $users->firstItem() + $loop->index }}
                         </td>
                         <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
                             <div class="text-sm leading-5 font-bold text-gray-900">
-                                {{ $book->title }}
+                                {{ $user->name }}
                             </div>
                             <div class="text-sm leading-5 text-gray-500">
-                                {{ $book->author }}
+                                {{ $user->username }}
                             </div>
                         </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
+                            {{ $user->email }}
+                        </td>
                         <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500 capitalize">
-                            {{ $book->formatPrice() }}
+                            {{ $user->role == 0 ? 'Admin' : ($user->role == 1 ? 'Pengelola' : 'Kasir') }}
                         </td>
-                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
-                            {{ $book->stock }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
-                            {{ $book->updatedBy->name }}
-                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">{{ $user->created_at->format('d-m-Y H:i') }}</td>
                         <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
                             <div class="flex flex-col xl:flex-row justify-end">
-                                <a href="{{ route('books.show', $book->slug) }}" class="text-indigo-500 hover:text-indigo-400 mr-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-info-square-rounded">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                        <path d="M12 9h.01" />
-                                        <path d="M11 12h1v4h1" />
-                                        <path d="M12 3c7.2 0 9 1.8 9 9s-1.8 9 -9 9s-9 -1.8 -9 -9s1.8 -9 9 -9z" />
-                                    </svg>
-                                </a>
-                                <a href="{{ route('books.edit', $book->slug) }}" class="text-yellow-500 hover:text-yellow-400 mr-2">
+                                <a href="{{ route('users.edit', $user->username) }}" class="text-yellow-500 hover:text-yellow-400 mr-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                         <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
@@ -94,7 +84,7 @@
                                         <path d="M16 5l3 3" />
                                     </svg>
                                 </a>
-                                <button type="button" data-modal-target="deleteModal{{ $book->id }}" data-modal-toggle="deleteModal{{ $book->id }}" class="text-red-500 hover:text-red-400 text-right">
+                                <button type="button" data-modal-target="deleteModal{{ $user->id }}" data-modal-toggle="deleteModal{{ $user->id }}" class="text-red-500 hover:text-red-400">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                         <path d="M4 7l16 0" />
@@ -106,13 +96,13 @@
                                 </button>
                             </div>
                             <!-- Model Delete -->
-                            <div id="deleteModal{{ $book->id }}" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
+                            <div id="deleteModal{{ $user->id }}" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-modal md:h-full">
                                 <div class="relative p-4 w-full max-w-md h-full md:h-auto">
                                     <div class="relative p-4 text-center bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
-                                        <form action="{{ route('books.destroy', $book->slug) }}" method="post" class="inline">
+                                        <form action="{{ route('users.destroy', $user->username) }}" method="post" class="inline">
                                             @method('DELETE')
                                             @csrf
-                                            <button type="button" class="text-gray-400 absolute top-2.5 right-2.5 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="deleteModal{{ $book->id }}">
+                                            <button type="button" class="text-gray-400 absolute top-2.5 right-2.5 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="deleteModal{{ $user->id }}">
                                                 <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                                                 </svg>
@@ -121,9 +111,9 @@
                                             <svg class="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
                                             </svg>
-                                            <p class="mb-4 text-gray-500 dark:text-gray-300">Hapus Buku <strong>{{ $book->title }}</strong> ?</p>
+                                            <p class="mb-4 text-gray-500 dark:text-gray-300">Hapus pengguna <strong>{{ $user->name }}</strong> ?</p>
                                             <div class="flex justify-center space-x-2 h-10">
-                                                <button type="button" class="w-28 px-3 py-1 bg-gray-600 text-white rounded-md text-sm hover:bg-gray-500 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" data-modal-toggle="deleteModal{{ $book->id }}">
+                                                <button type="button" class="w-28 px-3 py-1 bg-gray-600 text-white rounded-md text-sm hover:bg-gray-500 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" data-modal-toggle="deleteModal{{ $user->id }}">
                                                     Batal
                                                 </button>
                                                 <button type="submit" class="w-28 px-3 py-1 bg-red-600 text-white rounded-md text-sm hover:bg-red-500 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Hapus</button>
@@ -142,6 +132,6 @@
     </div>
 </div>
 <div class="mt-2">
-    {{ $books->appends(['search' => $search])->onEachSide(1)->links() }}
+    {{ $users->appends(['search' => $search])->onEachSide(1)->links() }}
 </div>
 @endsection

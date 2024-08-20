@@ -22,7 +22,7 @@ class TransactionFactory extends Factory
             'code' => "INV-" . fake()->numberBetween(100000, 999999),
             'total_price' => fake()->numberBetween(100000, 9999999),
             'status' => fake()->numberBetween(0, 2),
-            'updatedBy' => User::factory(),
+            'updated_by' => User::factory(),
         ];
     }
 }

@@ -6,7 +6,6 @@ use App\Models\Book;
 use App\Models\User;
 use App\Models\BookItem;
 use App\Models\Transaction;
-use Illuminate\Http\Request;
 use Illuminate\Support\Number;
 use App\Models\TransactionDetail;
 
@@ -37,7 +36,7 @@ class DashboardController extends Controller
         $totalBookSold = clone $transactionsDetail;
         $totalBookSold = $totalBookSold->sum('total_books');
 
-        $users = User::latest();
+        $users = User::orderBy('name', 'asc');
 
         return view('dashboard.index', [
             'title' => 'Admin Dashboard',
@@ -48,7 +47,7 @@ class DashboardController extends Controller
             'totalBookSold' => $totalBookSold,
             'totalTransactions' => $totalTransactions,
             'totalIncomes' => $totalIncomes,
-            'users' => $users->paginate(),
+            'users' => $users->paginate(7),
         ]);
     }
 
